@@ -2,36 +2,34 @@ package gomemcache
 
 import "sync"
 
-
-type CacheItem struct{
-
+type CacheItem struct {
 	Value string
 }
 
-type Cache struct{
-	mu sync.RWMutex
+type Cache struct {
+	mu    sync.RWMutex
 	items map[string]CacheItem
 }
 
-func NewCache() *Cache{
+func NewCache() *Cache {
 	return &Cache{
 		items: map[string]CacheItem{},
 	}
 }
 
-func (c *Cache) Set(key,value string){
-    c.mu.Lock()
+func (c *Cache) Set(key, value string) {
+	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.items[key] = CacheItem{Value: value}
 }
 
-func (c *Cache) Get(key string)(string,bool){
-    c.mu.RLock()
+func (c *Cache) Get(key string) (string, bool) {
+	c.mu.RLock()
 	defer c.mu.RUnlock()
-	item,found := c.items[key]
+	item, found := c.items[key]
 
-	if !found{
-		return "",false
+	if !found {
+		return "", false
 	}
-	return item.Value,true
+	return item.Value, true
 }
