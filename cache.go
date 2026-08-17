@@ -1,5 +1,7 @@
 package gomemcache
 
+import "sync"
+
 
 type CacheItem struct{
 
@@ -7,7 +9,7 @@ type CacheItem struct{
 }
 
 type Cache struct{
-
+	mu sync.RWMutex
 	items map[string]CacheItem
 }
 
@@ -18,12 +20,14 @@ func NewCache() *Cache{
 }
 
 func (c *Cache) Set(key,value string){
-
+    c.mu.Lock()
+	defer c.mu.Unlock()
 	c.items[key] = CacheItem{Value: value}
 }
 
 func (c *Cache) Get(key string)(string,bool){
-
+    c.mu.RLock()
+	defer c.mu.RUnlock()
 	item,found := c.items[key]
 
 	if !found{
