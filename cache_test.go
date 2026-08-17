@@ -1,6 +1,9 @@
 package gomemcache
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestCacheIntialization(t *testing.T) {
 	cache := NewCache()
@@ -12,7 +15,7 @@ func TestCacheIntialization(t *testing.T) {
 
 func TestCacheSetAndGetBehaviour(t *testing.T) {
 	cache := NewCache()
-	cache.Set("key1", "value1")
+	cache.Set("key1", "value1", time.Minute)
 	value, found := cache.Get("key1")
 
 	if !found || value != "value1" {

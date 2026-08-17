@@ -3,28 +3,39 @@ package gomemcache
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 type CacheServer struct {
 	cache *Cache
 }
 
-func NewCacheServer() *CacheServer {
+const defaultTTL = 5 * time.Minute
+
+func NewCacheServer(c *Cache) *CacheServer {
 	return &CacheServer{
-		cache: NewCache(),
+		cache: c,
 	}
 }
 
 func (cs *CacheServer) SetHandler(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Key   string `json:"key"`
-		Value string `json:"value"`
+		Key        string `json:"key"`
+		Value      string `json:"value"`
+		TTLSeconds int    `json:"TTLSeconds"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
-	cs.cache.Set(req.Key, req.Value)
+
+	ttl := defaultTTL
+	if req.TTLSeconds > 0 {
+		ttl = time.Duration(req.TTLSeconds) * time.Second
+	}
+
+	cs.cache.Set(req.Key, req.Value, ttl)
 	w.WriteHeader(http.StatusAccepted)
 }
 

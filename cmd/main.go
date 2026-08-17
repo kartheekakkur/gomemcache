@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
+
 	gomemcache "github.com/kartheekakkur/gomemcache"
 )
 
 func main() {
-	cs := gomemcache.NewCacheServer()
+	cache := gomemcache.NewCache()
+	cache.StartEvictionTicker(1 * time.Minute)
+	cs := gomemcache.NewCacheServer(cache)
 
 	http.HandleFunc("/set", cs.SetHandler)
 	http.HandleFunc("/get", cs.GetHandler)
