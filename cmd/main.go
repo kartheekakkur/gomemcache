@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	cache := gomemcache.NewCache()
+	cache := gomemcache.NewCache(5)
 	cache.StartEvictionTicker(1 * time.Minute)
 	cs := gomemcache.NewCacheServer(cache)
 
