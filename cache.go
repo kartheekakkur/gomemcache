@@ -59,9 +59,9 @@ func (c *Cache) Get(key string) (string, bool) {
 	if !found || time.Now().After(elem.Value.(*Entry).value.ExpiryTime) {
 		if found {
 			c.eviction.Remove(elem)
-			delete(c.items,key)
+			delete(c.items, key)
 		}
-		return "",false
+		return "", false
 	}
 
 	c.eviction.MoveToFront(elem)

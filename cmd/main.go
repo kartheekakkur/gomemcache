@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	gomemcache "github.com/kartheekakkur/gomemcache"
 )
@@ -20,10 +19,8 @@ func main() {
 	flag.Parse()
 
 	peerList := strings.Split(peers, ",")
-
-	cache := gomemcache.NewCache(5)
-	cache.StartEvictionTicker(1 * time.Minute)
-	cs := gomemcache.NewCacheServer(cache, peerList)
+	selfID := "http://localhost" + port
+	cs := gomemcache.NewCacheServer(peerList, selfID)
 
 	http.HandleFunc("/set", cs.SetHandler)
 	http.HandleFunc("/get", cs.GetHandler)
